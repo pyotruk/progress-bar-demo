@@ -1,0 +1,43 @@
+<html>
+<head>
+    <title>Demo</title>
+    <script
+            src="https://code.jquery.com/jquery-3.6.0.min.js"
+            integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+            crossorigin="anonymous"></script>
+</head>
+<body>
+
+<ul id="tasks"></ul>
+
+<script>
+    $(document).ready(() => {
+        // renders tasks list
+        fetch("http://localhost:8000/tasks")
+            .then(response => response.json())
+            .then(data => {
+                data.forEach((task) => {
+                    $("#tasks").append(`<li>
+                        <b>#${task.id}</b>
+                        <button data-id="${task.id}">${task.progress}</button>
+                    </li>`);
+                });
+
+                // list rendering finished
+
+                $("#tasks button").click(e => {
+                    const button = $(e.target);
+                    const taskId = button.attr("data-id");
+                    setInterval(() => {
+                        fetch(`http://localhost:8000/taskStatus/${taskId}`)
+                            .then(response => response.json())
+                            .then(task => {
+                                button.text(task.progress);
+                            });
+                    }, 1000);
+                });
+            });
+    });
+</script>
+</body>
+</html>
